@@ -12,6 +12,10 @@ export interface ITranslateOptions {
     to: string;
 }
 
+export interface ITranslateRegistry {
+    (translation: string, translate: new () => ITranslate): void;
+}
+
 export class TranslateManager implements ITranslate {
 
     private _translate: ITranslate | null = null;

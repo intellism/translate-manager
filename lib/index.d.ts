@@ -9,6 +9,9 @@ export interface ITranslateOptions {
     from?: string;
     to: string;
 }
+export interface ITranslateRegistry {
+    (translation: string, translate: new () => ITranslate): void;
+}
 export declare class TranslateManager implements ITranslate {
     private _storage;
     private _translate;
