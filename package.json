@@ -12,6 +12,11 @@
 	"activationEvents": [
         "onCommand:translate-manager.helloWorld"
 	],
+	"repository": {
+        "type": "git",
+        "url": "https://github.com/intellism/translate-manager.git"
+    },
+	"homepage": "https://github.com/intellism/translate-manager#readme",
 	"main": "./lib/index.js",
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
