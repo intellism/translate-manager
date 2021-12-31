@@ -1,6 +1,6 @@
 {
-  "name": "translate-manager",
-	"displayName": "translate manager",
+	"name": "comment-translate-manager",
+	"displayName": "vscode translate manager",
 	"description": "",
 	"version": "0.0.1",
 	"engines": {
@@ -9,13 +9,10 @@
 	"categories": [
 		"Other"
 	],
-	"activationEvents": [
-        "onCommand:translate-manager.helloWorld"
-	],
 	"repository": {
-        "type": "git",
-        "url": "https://github.com/intellism/translate-manager.git"
-    },
+		"type": "git",
+		"url": "https://github.com/intellism/translate-manager.git"
+	},
 	"homepage": "https://github.com/intellism/translate-manager#readme",
 	"main": "./lib/index.js",
 	"scripts": {
@@ -31,11 +28,13 @@
 		"glob": "^7.1.7",
 		"typescript": "^4.4.4"
 	},
-	"peerDependencies":{
+	"peerDependencies": {
 		"@types/vscode": "^1.63.0"
 	},
 	"files": [
 		"/lib",
-		"/src"
+		"/src",
+		"/package.json",
+		"/package-lock.json"
 	]
 }
