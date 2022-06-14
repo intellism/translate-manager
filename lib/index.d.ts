@@ -14,13 +14,14 @@ export interface ITranslateRegistry {
 }
 export declare class TranslateManager implements ITranslate {
     private _storage;
+    private _maxLen;
     private _translate;
     protected _onTranslate: EventEmitter<string>;
     private _registry;
     private _source;
     private _inRequest;
-    readonly maxLen = 3000;
-    constructor(_storage: Memento);
+    constructor(_storage: Memento, _maxLen?: number);
+    get maxLen(): number;
     get translator(): ITranslate;
     hasSource(source: string): boolean;
     setSource(source: string): ITranslate | null;

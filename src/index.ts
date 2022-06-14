@@ -23,10 +23,12 @@ export class TranslateManager implements ITranslate {
     private _registry: Map<string, new () => ITranslate> = new Map();
     private _source: string = '';
     private _inRequest: Map<string, Promise<string>> = new Map();
-    readonly maxLen=3000;
-    constructor(private _storage: Memento) {
+    constructor(private _storage: Memento, private _maxLen = 5000) {
     }
 
+    public get maxLen() {
+        return this._maxLen;
+    }
     public get translator() {
         if (!this._translate) {
             throw new Error('Translate not found.');
@@ -112,7 +114,7 @@ export class TranslateManager implements ITranslate {
             this._storage.update(key, translated);  // 不用等待持久化成功，直接返回。
             return translated;
         } catch(e) {
-
+            this._onTranslate.fire(JSON.stringify(e));
             return '';
         }
         
@@ -137,11 +139,13 @@ function splitText(text:string, maxLen:number):string[] {
     let subLen = 0;
     for(let i=0;i<texts.length;i++) {
         const lineText = texts[i];
-        if(subLen + lineText.length <= maxLen) {
+        // fix \n text length
+        if(subLen+ subTexts.length + lineText.length <= maxLen) {
             subLen +=lineText.length;
             subTexts.push(lineText);
         } else {
             maxLenTexts.push(subTexts.join('\n'));
+            // 重置下一片段。  TODO 这里比较隐晦，可以重构简单一些
             subTexts = [lineText];
             subLen = lineText.length;
         }
