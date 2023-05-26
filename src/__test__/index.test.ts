@@ -10,7 +10,7 @@ jest.mock('vscode',()=>{
   }
 },{virtual: true});
 
-import { TranslateManager } from '../index';
+import { TranslateManager, encodeMarkdownUriComponent } from '../index';
 import { markdown } from './fixtures/translate_data';
 
 
@@ -59,4 +59,30 @@ test('markdwon', async()=>{
   expect(maxLen).toBeLessThan(1000);
   expect(res.split('\n').length).toEqual(markdown.split('\n').length);
 
+});
+
+test('encodeMarkdownUri', ()=>{
+  encodeMarkdownUriComponent('<a href="/index">hello ()</a>');
+})
+
+
+test('should encode a markdown URI', () => {
+  const input = "https://github.com/example_repo/(test)";
+  const output = "https%3A%2F%2Fgithub.com%2Fexample_repo%2F%28test%29";
+
+  expect(encodeMarkdownUriComponent(input)).toEqual(output);
+});
+
+test('should handle special characters properly', () => {
+  const input = "https://github.com/example_repo/[test]/?q=test#fragment";
+  const output = "https%3A%2F%2Fgithub.com%2Fexample_repo%2F%5Btest%5D%2F%3Fq%3Dtest%23fragment";
+
+  expect(encodeMarkdownUriComponent(input)).toEqual(output);
+});
+
+test('should return an empty string if the input is empty', () => {
+  const input = "";
+  const output = "";
+
+  expect(encodeMarkdownUriComponent(input)).toEqual(output);
 });

@@ -14,14 +14,13 @@ export interface ITranslateRegistry {
 }
 export declare class TranslateManager implements ITranslate {
     private _storage;
-    private _maxLen;
+    maxLen: number;
     private _translate;
     protected _onTranslate: EventEmitter<string>;
     private _registry;
     private _source;
     private _inRequest;
-    constructor(_storage: Memento, _maxLen?: number);
-    get maxLen(): number;
+    constructor(_storage: Memento, maxLen?: number);
     get translator(): ITranslate;
     hasSource(source: string): boolean;
     setSource(source: string): ITranslate | null;
@@ -33,3 +32,9 @@ export declare class TranslateManager implements ITranslate {
     translate(text: string, { to, from }: ITranslateOptions): Promise<string>;
     link(text: string, opts: ITranslateOptions): string;
 }
+/**
+* Encode the incoming markdown URI to avoid conflicts with the original markdown format.
+* @param uri The markdown URI string to be encoded
+* @returns The encoded string
+*/
+export declare function encodeMarkdownUriComponent(uri: string): string;

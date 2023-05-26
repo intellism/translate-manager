@@ -23,12 +23,9 @@ export class TranslateManager implements ITranslate {
     private _registry: Map<string, new () => ITranslate> = new Map();
     private _source: string = '';
     private _inRequest: Map<string, Promise<string>> = new Map();
-    constructor(private _storage: Memento, private _maxLen = 5000) {
+    constructor(private _storage: Memento, public maxLen = 5000) {
     }
 
-    public get maxLen() {
-        return this._maxLen;
-    }
     public get translator() {
         if (!this._translate) {
             throw new Error('Translate not found.');
@@ -156,4 +153,14 @@ function splitText(text:string, maxLen:number):string[] {
     }
 
     return maxLenTexts;
+}
+
+/**
+* Encode the incoming markdown URI to avoid conflicts with the original markdown format.
+* @param uri The markdown URI string to be encoded
+* @returns The encoded string
+*/
+export function encodeMarkdownUriComponent(uri: string): string {
+    return encodeURIComponent(uri)
+        .replace(/[()]/g, (char) => `%${char.charCodeAt(0).toString(16)}`);
 }
