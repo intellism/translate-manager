@@ -9,7 +9,7 @@ export interface ITranslate {
 
 export interface ITranslateOptions {
     from?: string;
-    to: string;
+    to?: string;
 }
 
 export interface ITranslateRegistry {
@@ -23,7 +23,8 @@ export class TranslateManager implements ITranslate {
     private _registry: Map<string, new () => ITranslate> = new Map();
     private _source: string = '';
     private _inRequest: Map<string, Promise<string>> = new Map();
-    constructor(private _storage: Memento, public maxLen = 5000) {
+    
+    constructor(private _storage: Memento, public maxLen = 5000, public opts:ITranslateOptions = {to:'auto', from:'auto'}) {
     }
 
     public get translator() {
@@ -33,10 +34,22 @@ export class TranslateManager implements ITranslate {
         return this._translate;
     }
 
+    /**
+     * Checks if the given source exists in the registry.
+     *
+     * @param {string} source - The source to check.
+     * @return {boolean} True if the source exists in the registry, false otherwise.
+     */
     public hasSource(source:string) {
         return this._registry.has(source);
     }
 
+    /**
+     * Sets the source string for translation.
+     *
+     * @param {string} source - The new source string to set.
+     * @return {void} - Returns nothing.
+     */
     public setSource(source:string) {
         if (this._source === source) return this._translate;
         this._source = source;
@@ -50,14 +63,31 @@ export class TranslateManager implements ITranslate {
         return this._translate;
     }
 
+    /**
+     * Returns the event associated with the `onTranslate` property.
+     *
+     * @return {Event} The event associated with the `onTranslate` property.
+     */
     get onTranslate() {
         return this._onTranslate.event;
     }
 
+    /**
+     * Get all source.
+     *
+     * @return {Array<any>} An array of all source.
+     */
     public getAllSource() {
         return [...this._registry.keys()];
     }
 
+    /**
+     * Adds a translation function to the registry.
+     *
+     * @param {string} title - The title of the translation function.
+     * @param {new () => ITranslate} ctor - The constructor of the translation function.
+     * @return {ReturnType<this['getAllSource']>} - The result of calling getAllSource.
+     */
     public registry(title: string, ctor: new () => ITranslate) {
         this._registry.set(title, ctor);
         return this.getAllSource();
@@ -86,7 +116,17 @@ export class TranslateManager implements ITranslate {
         }
     }
 
-    public async translate(text: string, { to, from = 'auto' }: ITranslateOptions) {
+   
+    /**
+     * Translate the given text from one language to another.
+     *
+     * @param {string} text - The text to be translated.
+     * @param {ITranslateOptions} options - The options for translation.
+     * @param {string} options.to - The language to translate to. Defaults to the value set in `this.opts.to`.
+     * @param {string} options.from - The language to translate from. Defaults to the value set in `this.opts.from`.
+     * @return {Promise<string>} - The translated text.
+     */
+    public async translate(text: string, { to = this.opts.to, from = this.opts.from }: ITranslateOptions = this.opts) {
 
         if(text.length>this.maxLen) {
             return `There are more than ${this.maxLen} characters with translation, please reduce the translation content.`;
@@ -117,9 +157,19 @@ export class TranslateManager implements ITranslate {
         
     }
 
-    public link(text: string, opts: ITranslateOptions) {
+    
+    /**
+     * Generates a link with translated text.
+     *
+     * @param {string} text - The text to be translated.
+     * @param {ITranslateOptions} options - The translation options.
+     * @param {string} options.to - The target language to translate to. Defaults to this.opts.to.
+     * @param {string} options.from - The source language to translate from. Defaults to this.opts.from.
+     * @return {string} The translated text wrapped in a link.
+     */
+    public link(text: string, { to = this.opts.to, from = this.opts.from }: ITranslateOptions = this.opts) {
         try {
-            return this.translator.link(text, opts);
+            return this.translator.link(text, {to, from});
         } catch (e) {
             this._onTranslate.fire(JSON.stringify(e));
             return '';
